@@ -1,0 +1,11 @@
+.canvas-wrapper {
+    overflow: auto !important;
+    width: 70vw; 
+    height: 100vh;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+#canvas {
+    border: 2px dashed black;
+}

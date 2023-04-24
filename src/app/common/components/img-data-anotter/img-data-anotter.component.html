@@ -1,0 +1,20 @@
+<section class="img-data-annotter-container">
+    <app-canvas-editor-tool
+        [toolColors]="mainSetup?.colors"
+        [thickessRange]="mainSetup?.thicknessRange"
+        [activeTools]="mainSetup?.tools"
+        [toolStyleHandler]="mainSetup?.style?.tool"
+        [ngStyle]="mainSetup?.style?.tool ? {
+            'width': (mainSetup?.style?.tool?.width || null),
+            'height': (mainSetup?.style?.tool?.height || null),
+            'background-color': (mainSetup?.style?.tool?.primaryColor || null)
+        } : null"
+    ></app-canvas-editor-tool>
+    <app-canvas-editior 
+        [imageDataURL]="bgImage"
+        [ngStyle]="mainSetup?.style?.editor ? {
+            width: (mainSetup?.style?.editor?.width || null),
+            height: (mainSetup?.style?.editor?.height || null)
+        } : null"
+    ></app-canvas-editior>
+</section>

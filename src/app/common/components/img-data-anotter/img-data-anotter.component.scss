@@ -1,0 +1,20 @@
+.img-data-annotter-container {
+    display: flex;
+    overflow: hidden;
+
+    app-canvas-editor-tool, app-canvas-editior {
+        display: block;
+        height: 100vh;
+    }
+
+    app-canvas-editor-tool {
+        width: 30vw;
+        background-color: #e86a33cc;
+        overflow: auto;
+    }
+
+    app-canvas-editior {
+        width: 70vw;
+    }
+
+}

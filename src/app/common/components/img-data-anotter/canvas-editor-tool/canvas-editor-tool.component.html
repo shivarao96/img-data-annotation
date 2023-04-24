@@ -1,0 +1,306 @@
+<ng-template 
+    #btnToolAction 
+    let-className="className" 
+    let-img="img" 
+    let-isActive="isActive"
+    let-ngClassObj="ngClassObj"
+    let-passVal="passVal"
+    let-clickActionType="clickActionType"
+>
+    <button
+        [ngStyle]="toolStyleHandler?.button ? 
+            {
+                'background' : toolStyleHandler?.button?.color || null,
+                'border-color': toolStyleHandler?.button?.borderColor || null
+            } : null"
+        *ngIf="isActive" 
+        class="{{className}}" 
+        [ngClass]="ngClassObj" 
+        (click)="btnActionOnClick(clickActionType, passVal)"
+        [title]="className"
+    >
+        <img [src]="img" />
+    </button>
+</ng-template>
+
+<ng-template
+    #label
+    let-label="label"
+>
+    <div 
+        [ngStyle]="toolStyleHandler?.label ? {
+            'font-family': toolStyleHandler?.label?.fontFamily || null,
+            'font-size': toolStyleHandler?.label?.fontSize || null
+        }: null"
+        class="label"
+    >{{label}}</div>
+</ng-template>
+
+<section class="canvas-tool-section">
+
+    <div class="upload-action">
+        <ng-container 
+            [ngTemplateOutlet]="label"
+            [ngTemplateOutletContext]="{
+                label: toolStyleHandler?.label?.labels?.uploadImageLabel || 'Upload Image'
+            }"
+        ></ng-container>
+        <div class="upload-wrapper">
+            <div class="img-container" *ngIf="url">
+                <img class="current-uploaded-img" [src]="url">
+            </div>
+            <button
+                [title]="'upload image'"
+                [ngStyle]="toolStyleHandler?.button ? 
+                {
+                    'background' : toolStyleHandler?.button?.color || null,
+                    'border-color': toolStyleHandler?.button?.borderColor || null
+                } : null" 
+                *ngIf="!url" class="upload-img">
+                <img src="{{toolStyleHandler?.images?.uploadAction1 || 'assets/images/gallery.png'}}" />
+                <input type="file" (change)="readUrl($event);" accept="image/*" />
+            </button>
+        </div>
+        <div class="upload-btn-action">
+            <ng-container 
+                [ngTemplateOutlet]="btnToolAction"
+                [ngTemplateOutletContext]="{
+                    className: 'upload-action-2-btn',
+                    img: toolStyleHandler?.images?.uploadAction2 || 'assets/images/upload.png',
+                    isActive: url,
+                    ngClassObj: {},
+                    passVal: [],
+                    clickActionType: 'uploadImage'
+                }"
+            ></ng-container>
+            <ng-container 
+                [ngTemplateOutlet]="btnToolAction"
+                [ngTemplateOutletContext]="{
+                    className: 'upload-cancel-btn',
+                    img: toolStyleHandler?.images?.cancelUpload || 'assets/images/cancel.png',
+                    isActive: url,
+                    ngClassObj: {},
+                    passVal: [],
+                    clickActionType: 'cancelUpload'
+                }"
+            ></ng-container>
+        </div>
+    </div>
+
+    <!-- <div class="state-handling-wrapper">
+        <button class="undo-state" (click)="undo()">Undo</button>
+        <button class="redo-state" (click)="redo()">Redo</button>
+    </div> -->
+
+    <div class="tools">
+        <ng-container 
+            [ngTemplateOutlet]="label"
+            [ngTemplateOutletContext]="{
+                label: toolStyleHandler?.label?.labels?.drawingToolLabel || 'Drawing tools'
+            }"
+        ></ng-container>
+        <div class="drawing-tools" [ngStyle]="toolStyleHandler?.secondaryColor ? {
+            'background' : toolStyleHandler?.secondaryColor || null
+        } : null">
+            <!-- Select -->
+            <ng-container 
+                [ngTemplateOutlet]="btnToolAction"
+                [ngTemplateOutletContext]="{
+                    className: 'select',
+                    img: toolStyleHandler?.images?.selectTool || 'assets/images/selection-main.png',
+                    isActive: true,
+                    ngClassObj: {'selected': DrawingTools.SELECT === selected},
+                    passVal: [DrawingTools.SELECT],
+                    clickActionType: 'toolSelected'
+                }"
+            ></ng-container>
+            <!-- Erase -->
+            <ng-container 
+                [ngTemplateOutlet]="btnToolAction"
+                [ngTemplateOutletContext]="{
+                    className: 'erase',
+                    img: toolStyleHandler?.images?.eraseTool || 'assets/images/eraser-main.png',
+                    isActive: true,
+                    ngClassObj: {'selected': DrawingTools.ERASE === selected},
+                    passVal: [DrawingTools.ERASE],
+                    clickActionType: 'toolSelected'
+                }"
+            ></ng-container>
+            <!-- Circle -->
+            <ng-container 
+                [ngTemplateOutlet]="btnToolAction"
+                [ngTemplateOutletContext]="{
+                    className: 'circle',
+                    img: toolStyleHandler?.images?.circleDrawTool || 'assets/images/circle-main.png',
+                    isActive: activeTools?.circle !== undefined ? activeTools?.circle : true,
+                    ngClassObj: {'selected': DrawingTools.CIRCLE === selected},
+                    passVal: [DrawingTools.CIRCLE],
+                    clickActionType: 'toolSelected'
+                }"
+            ></ng-container>
+            <!-- Rectangle -->
+            <ng-container 
+                [ngTemplateOutlet]="btnToolAction"
+                [ngTemplateOutletContext]="{
+                    className: 'rectangle',
+                    img: toolStyleHandler?.images?.rectangleDrawTool || 'assets/images/rectangle.png',
+                    isActive: activeTools?.rectangle !== undefined ? activeTools?.rectangle : true,
+                    ngClassObj: {'selected': DrawingTools.RECTANGLE === selected},
+                    passVal: [DrawingTools.RECTANGLE],
+                    clickActionType: 'toolSelected'
+                }"
+            ></ng-container>
+            <!-- Freehand -->
+            <ng-container 
+                [ngTemplateOutlet]="btnToolAction"
+                [ngTemplateOutletContext]="{
+                    className: 'freehand',
+                    img: toolStyleHandler?.images?.freeHandDrawTool || 'assets/images/pencil.png',
+                    isActive: activeTools?.freehand !== undefined ? activeTools?.freehand : true,
+                    ngClassObj: {'selected': DrawingTools.FREEHAND === selected},
+                    passVal: [DrawingTools.FREEHAND],
+                    clickActionType: 'toolSelected'
+                }"
+            ></ng-container>
+            <!-- Line -->
+            <ng-container 
+                [ngTemplateOutlet]="btnToolAction"
+                [ngTemplateOutletContext]="{
+                    className: 'line',
+                    img: toolStyleHandler?.images?.lineDrawTool || 'assets/images/straight-line.png',
+                    isActive: activeTools?.line !== undefined ? activeTools?.line : true,
+                    ngClassObj: {'selected': DrawingTools.LINE === selected},
+                    passVal: [DrawingTools.LINE],
+                    clickActionType: 'toolSelected'
+                }"
+            ></ng-container>
+            <!-- Dashed line -->
+            <ng-container 
+                [ngTemplateOutlet]="btnToolAction"
+                [ngTemplateOutletContext]="{
+                    className: 'dashed-line',
+                    img: toolStyleHandler?.images?.dashedLineDrawTool || 'assets/images/dashed-line.png',
+                    isActive: activeTools?.dashed_line !== undefined ? activeTools?.dashed_line : true,
+                    ngClassObj: {'selected': DrawingTools.DASHED_LINE === selected},
+                    passVal: [DrawingTools.DASHED_LINE],
+                    clickActionType: 'toolSelected'
+                }"
+            ></ng-container>
+            <!-- Text -->
+            <ng-container 
+                [ngTemplateOutlet]="btnToolAction"
+                [ngTemplateOutletContext]="{
+                    className: 'text',
+                    img: toolStyleHandler?.images?.textDrawTool || 'assets/images/text.png',
+                    isActive: activeTools?.text !== undefined ? activeTools?.text : true,
+                    ngClassObj: {'selected': DrawingTools.TEXT === selected},
+                    passVal: [DrawingTools.TEXT],
+                    clickActionType: 'toolSelected'
+                }"
+            ></ng-container>
+        </div>
+        
+        <ng-container 
+            [ngTemplateOutlet]="label"
+            [ngTemplateOutletContext]="{
+                label: toolStyleHandler?.label?.labels?.actionToolLabel || 'Action tools'
+            }"
+        ></ng-container>
+        <div class="action-items" [ngStyle]="toolStyleHandler?.secondaryColor ? {
+            'background' : toolStyleHandler?.secondaryColor || null
+        } : null">
+            <ng-container 
+                [ngTemplateOutlet]="btnToolAction"
+                [ngTemplateOutletContext]="{
+                    className: 'clear-all',
+                    img: toolStyleHandler?.images?.clearAll || 'assets/images/trash-can.png',
+                    isActive: true,
+                    ngClassObj: {},
+                    passVal: [DrawingTools.CLEARALL],
+                    clickActionType: 'toolSelected'
+                }"
+            ></ng-container>
+            <ng-container 
+                [ngTemplateOutlet]="btnToolAction"
+                [ngTemplateOutletContext]="{
+                    className: 'zoom-in',
+                    img: toolStyleHandler?.images?.zoomIn || 'assets/images/maximize.png',
+                    isActive: true,
+                    ngClassObj: {},
+                    passVal: [],
+                    clickActionType: 'zoomIn'
+                }"
+            ></ng-container>
+            <ng-container 
+                [ngTemplateOutlet]="btnToolAction"
+                [ngTemplateOutletContext]="{
+                    className: 'zoom-out',
+                    img: toolStyleHandler?.images?.zoomOut || 'assets/images/minimize.png',
+                    isActive: true,
+                    ngClassObj: {},
+                    passVal: [],
+                    clickActionType: 'zoomOut'
+                }"
+            ></ng-container>
+        </div>
+
+        <ng-container 
+            [ngTemplateOutlet]="label"
+            [ngTemplateOutletContext]="{
+                label: toolStyleHandler?.label?.labels?.changeThicknessLabel || 'Change Thickness'
+            }"
+        ></ng-container>
+        <div class="thickness-slider sliderContainer">
+            <input [ngStyle]="toolStyleHandler?.secondaryColor ? {
+                'background' : toolStyleHandler?.secondaryColor || null
+            } : null"
+                [ngModel]="selectedThickness" 
+                (ngModelChange)="changeThickNess($event)" 
+                type="range" 
+                [value]="thickessRange?.lowerBound ? thickessRange?.lowerBound : 1"
+                [min]="thickessRange?.lowerBound ? thickessRange?.lowerBound : 1" 
+                [max]="thickessRange?.lowerBound ? thickessRange?.higherBound : 10" 
+                class="slider" />
+            <!-- <span id="output">{{selectedThickness}}</span> -->
+        </div>
+    </div>
+
+    <ng-container 
+        [ngTemplateOutlet]="label"
+        [ngTemplateOutletContext]="{
+            label: toolStyleHandler?.label?.labels?.changeColorLabel || 'Change color'
+        }"
+    ></ng-container>
+    <div class="color-container" [ngStyle]="toolStyleHandler?.secondaryColor ? {
+        'background' : toolStyleHandler?.secondaryColor || null
+    } : null">
+        <div *ngFor="let colour of colors;index as i;"
+             [ngStyle]="{'background-color': colour}"
+             [ngClass]="{'selected': colour === selectedColor}"
+             class="colour-picker"
+             (click)="onSelect(colour)">
+        </div>
+      </div>
+
+    <ng-container 
+        [ngTemplateOutlet]="label"
+        [ngTemplateOutletContext]="{
+            label: toolStyleHandler?.label?.labels?.saveAsLabel || 'Save as Image'
+        }"
+    ></ng-container>
+    <ng-container 
+        [ngTemplateOutlet]="btnToolAction"
+        [ngTemplateOutletContext]="{
+            className: 'download-btn',
+            img: toolStyleHandler?.images?.saveAs || 'assets/images/download.png',
+            isActive: true,
+            ngClassObj: {},
+            passVal: [],
+            clickActionType: 'saveAsImage'
+        }"
+    ></ng-container>
+    <!-- <button class="download-btn" (click)="saveAsImage()">
+        <img src="assets/images/download.png" />
+    </button> -->
+
+</section>
